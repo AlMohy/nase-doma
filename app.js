@@ -20,6 +20,8 @@
 
   // --- Lidé ---
   const other = p => p === 'a' ? 'b' : 'a';
+  // Kolečko s prvním písmenem jména (dřív 1/2 – v nákupu to vypadalo jako množství).
+  function initial(p) { return (name(p).trim()[0] || (p === 'a' ? '1' : '2')).toUpperCase(); }
   function name(p) { const r = S.state.people[p]; return (r && r.name) ? r.name : t(p === 'a' ? 'personA' : 'personB'); }
   const me = () => S.cfg.me;
 
@@ -275,7 +277,7 @@
         : `<div class="empty"><span class="big">🧺</span>${esc(t('shopEmpty'))}</div>`}
       ${done.length ? `<div class="card"><div class="row between"><h2 style="margin:0">${esc(t('inCart'))}</h2><button class="btn small secondary" id="emptyCart">${esc(t('emptyCart', { n: done.length }))}</button></div><ul class="list" style="margin-top:6px">${done.sort((x, y) => y.t - x.t).map(shopRow).join('')}</ul></div>` : ''}`;
   }
-  function shopRow(i) { return `<li class="item ${i.done ? 'done' : ''}" data-id="${i.id}"><button type="button" class="check ${i.done ? 'on' : ''}" data-check="${i.id}" role="checkbox" aria-checked="${i.done ? 'true' : 'false'}" aria-label="${esc(i.n)}">${i.done ? '✓' : ''}</button><div class="name" data-qty="${i.id}">${esc(i.n)}${i.q ? `<small>${esc(i.q)}</small>` : ''}</div>${i.by ? `<span class="who ${i.by}">${i.by === 'a' ? '1' : '2'}</span>` : ''}<button type="button" class="act" data-del="${i.id}" aria-label="${esc(t('delete'))}: ${esc(i.n)}">✕</button></li>`; }
+  function shopRow(i) { return `<li class="item ${i.done ? 'done' : ''}" data-id="${i.id}"><button type="button" class="check ${i.done ? 'on' : ''}" data-check="${i.id}" role="checkbox" aria-checked="${i.done ? 'true' : 'false'}" aria-label="${esc(i.n)}">${i.done ? '✓' : ''}</button><div class="name" data-qty="${i.id}">${esc(i.n)}${i.q ? `<small>${esc(i.q)}</small>` : ''}</div>${i.by ? `<span class="who ${i.by}" title="${esc(t('addedBy', { name: name(i.by) }))}" aria-label="${esc(t('addedBy', { name: name(i.by) }))}">${esc(initial(i.by))}</span>` : ''}<button type="button" class="act" data-del="${i.id}" aria-label="${esc(t('delete'))}: ${esc(i.n)}">✕</button></li>`; }
   function addShop(text) {
     text.split(',').map(s => s.trim()).filter(Boolean).forEach(nm => {
       const existing = S.get('shop').find(i => norm(i.n) === norm(nm));
@@ -298,7 +300,7 @@
   // --- Úkoly ---
   function choreRow(c) {
     const d = daysUntil(c), [lbl, cls] = dueLabel(d), who = turn(c), last = c.last ? t('lastDone', { who: c.lastBy ? name(c.lastBy) : '', when: ago(c.last) }) : t('never');
-    return `<li class="item" data-id="${c.id}"><span class="who ${who || 'any'}" title="${esc(who ? name(who) : t('who_any'))}">${who ? (who === 'a' ? '1' : '2') : '👥'}</span><div class="name" data-edit="${c.id}">${esc(c.n)}<small>${who ? esc(t('turnOf', { name: name(who) })) + ' · ' : ''}${esc(t('freq_' + (c.freq || 'weekly')))} · ${esc(last)}</small></div><span class="pill ${cls}">${esc(lbl)}</span><button type="button" class="btn small ${d <= 0 ? '' : 'secondary'}" data-done="${c.id}">${esc(t('doneBtn'))}</button></li>`;
+    return `<li class="item" data-id="${c.id}"><span class="who ${who || 'any'}" title="${esc(who ? name(who) : t('who_any'))}">${who ? esc(initial(who)) : '👥'}</span><div class="name" data-edit="${c.id}">${esc(c.n)}<small>${who ? esc(t('turnOf', { name: name(who) })) + ' · ' : ''}${esc(t('freq_' + (c.freq || 'weekly')))} · ${esc(last)}</small></div><span class="pill ${cls}">${esc(lbl)}</span><button type="button" class="btn small ${d <= 0 ? '' : 'secondary'}" data-done="${c.id}">${esc(t('doneBtn'))}</button></li>`;
   }
   function choresHTML() {
     const all = S.get('chores').sort((x, y) => daysUntil(x) - daysUntil(y) || x.n.localeCompare(y.n)), due = all.filter(c => daysUntil(c) <= 0), later = all.filter(c => daysUntil(c) > 0);
@@ -308,7 +310,7 @@
       ${all.length ? `${due.length ? `<div class="card"><h2>${esc(t('due'))}</h2><ul class="list">${due.map(choreRow).join('')}</ul></div>` : ''}${later.length ? `<div class="card"><h2>${esc(t('later'))}</h2><ul class="list">${later.map(choreRow).join('')}</ul></div>` : ''}`
         : `<div class="empty"><span class="big">🧹</span>${esc(t('choresEmpty'))}</div>`}
       <div class="card"><h2>${esc(t('choresSuggest'))}</h2><div class="chips">${t('sugg').filter(s => !names.has(norm(s))).map(s => `<button type="button" class="chip" data-sugg="${esc(s)}">${esc(s)}</button>`).join('')}</div></div>
-      <div class="card"><h2>${esc(t('log'))}</h2>${logs.length ? `<ul class="list">${logs.map(l => `<li class="item"><span class="who ${l.by}">${l.by === 'a' ? '1' : '2'}</span><div class="name">${esc(l.name)}<small>${esc(name(l.by))} · ${esc(ago(l.at))} · +${l.pts} ${esc(t('pts'))}</small></div></li>`).join('')}</ul>` : `<div class="muted">${esc(t('logEmpty'))}</div>`}</div>`;
+      <div class="card"><h2>${esc(t('log'))}</h2>${logs.length ? `<ul class="list">${logs.map(l => `<li class="item"><span class="who ${l.by}">${esc(initial(l.by))}</span><div class="name">${esc(l.name)}<small>${esc(name(l.by))} · ${esc(ago(l.at))} · +${l.pts} ${esc(t('pts'))}</small></div></li>`).join('')}</ul>` : `<div class="muted">${esc(t('logEmpty'))}</div>`}</div>`;
   }
   function bindChoreRows(v) {
     v.querySelectorAll('[data-done]').forEach(b => b.onclick = () => { const c = S.state.chores[b.dataset.done]; if (c) doneChore(Object.assign({ id: b.dataset.done }, c)); });

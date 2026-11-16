@@ -119,7 +119,7 @@ pre.code { background: var(--card2); border: 1px solid var(--line); border-radiu
 .status-line { font-size: 13px; color: var(--muted); margin-top: 6px; }
 .center { text-align: center; }
 /* Rozhodovač */
-.dec-open { display: flex; flex-direction: column; align-items: center; gap: 2px; padding: 12px 8px; }
+.dec-open { display: flex; flex-direction: column; align-items: center; justify-content: center; align-self: stretch; gap: 2px; padding: 12px 8px; }
 .dec-open small { font-weight: 400; font-size: 12px; color: var(--accent-deep); }
 .wheel { margin: 14px 0 8px; min-height: 96px; display: flex; flex-direction: column; align-items: center; justify-content: center; text-align: center; padding: 18px 14px; border-radius: 18px; background: linear-gradient(135deg, var(--accent-soft), var(--card2)); border: 1px solid var(--line); font-size: 26px; font-weight: 800; line-height: 1.2; overflow-wrap: anywhere; }
 .wheel small { display: block; font-size: 12px; font-weight: 600; color: var(--muted); text-transform: uppercase; letter-spacing: .4px; margin-bottom: 4px; }
