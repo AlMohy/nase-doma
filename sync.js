@@ -17,6 +17,9 @@
   const CFG = 'naseDoma.cfg.v1';
   const QUEUE = 'naseDoma.queue.v1';
   const COLLS = ['people', 'shop', 'chores', 'log', 'answers', 'fav', 'ideas', 'picks'];
+  // Připravená databáze (Mohyho Firebase projekt nase-doma, Belgie). Adresa není tajná: bez klíče domácnosti (≥ 16 znaků)
+  // pravidla databáze nic nepustí a kořen ani seznam domů nejde číst. Vlastní databázi lze nastavit v záložce Víc.
+  const DEFAULT_DB = 'https://nase-doma-d0ab6-default-rtdb.europe-west1.firebasedatabase.app';
 
   const now = () => Date.now();
   const uid = () => now().toString(36) + Math.random().toString(36).slice(2, 8);
@@ -32,6 +35,7 @@
     queue: load(QUEUE, []),
     listeners: [],
     status: 'off', // off | wait | ok | err
+    defaultDb: DEFAULT_DB,
     es: null,
     flushing: false,
 
@@ -95,7 +99,7 @@
     },
 
     // --- Sdílení přes Firebase ---
-    base() { const d = (this.cfg.db || '').replace(/\/+$/, ''); return d && this.cfg.key ? `${d}/domy/${this.cfg.key}` : ''; },
+    base() { const d = (this.cfg.db || this.defaultDb || '').replace(/\/+$/, ''); return d && this.cfg.key ? `${d}/domy/${this.cfg.key}` : ''; },
     enabled() { return !!this.base(); },
     enqueue(op) { if (!this.enabled()) return; this.queue.push(op); if (this.queue.length > 500) this.queue.splice(0, this.queue.length - 500); save(QUEUE, this.queue); },
     async flush() {
@@ -152,7 +156,7 @@
       return true;
     },
     resetLocal() { localStorage.removeItem(KEY); localStorage.removeItem(CFG); localStorage.removeItem(QUEUE); },
-    newKey() { const a = new Uint8Array(18); (crypto.getRandomValues ? crypto.getRandomValues(a) : a.forEach((_, i) => a[i] = Math.random() * 256)); return Array.from(a, b => 'abcdefghijklmnopqrstuvwxyz0123456789'[b % 36]).join(''); },
+    newKey() { const a = new Uint8Array(24); (crypto.getRandomValues ? crypto.getRandomValues(a) : a.forEach((_, i) => a[i] = Math.random() * 256)); return Array.from(a, b => 'abcdefghijklmnopqrstuvwxyz0123456789'[b % 36]).join(''); },
     uid,
   };
 
