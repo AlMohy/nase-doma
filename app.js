@@ -81,8 +81,9 @@
     if (actionLabel) el.querySelector('button').onclick = () => { el.hidden = true; action && action(); };
     clearTimeout(toastTimer); toastTimer = setTimeout(() => { el.hidden = true; }, actionLabel ? 6000 : 2500);
   }
-  function sheet(html, bind) { const el = $('#sheet'); el.innerHTML = `<div class="panel fade">${html}</div>`; el.hidden = false; el.onclick = e => { if (e.target === el) closeSheet(); }; bind && bind(el.querySelector('.panel')); }
-  function closeSheet() { const el = $('#sheet'); el.hidden = true; el.innerHTML = ''; }
+  let sheetRefresh = null; // panel, který se má překreslit, když dorazí změna (např. od partnera)
+  function sheet(html, bind, refresh) { const el = $('#sheet'); el.innerHTML = `<div class="panel fade" role="dialog" aria-modal="true">${html}</div>`; el.hidden = false; el.onclick = e => { if (e.target === el) closeSheet(); }; sheetRefresh = refresh || null; bind && bind(el.querySelector('.panel')); }
+  function closeSheet() { const el = $('#sheet'); el.hidden = true; el.innerHTML = ''; sheetRefresh = null; }
 
   // --- Navigace ---
   let tab = 'today';
@@ -104,6 +105,7 @@
     v.innerHTML = `<div class="fade">${({ today: todayHTML, shop: shopHTML, chores: choresHTML, more: moreHTML })[tab]()}</div>`;
     ({ today: bindToday, shop: bindShop, chores: bindChores, more: bindMore })[tab](v);
     if (keep) { const el = v.querySelector('#' + keep.id); if (el) { el.value = keep.value; el.focus(); } }
+    if (sheetRefresh && !$('#sheet').hidden) sheetRefresh();
   }
 
   // --- Uvítání ---
@@ -162,9 +164,75 @@
     const shopN = S.get('shop').filter(i => !i.done).length;
     return questionHTML(true) +
       `<div class="card"><h2>${esc(t('todayChores'))}</h2>${due.length ? `<ul class="list">${due.map(choreRow).join('')}</ul>` : `<div class="muted">${esc(t('todayNoChores'))}</div>`}${fairHTML(weekPoints(), t('fairTitle'))}</div>
-       <div class="card row between"><div><b>${esc(shopN ? t('shopSummary', { n: plural(shopN) }) : t('shopSummary0'))}</b></div><button class="btn small secondary" data-go="shop">${esc(t('openList'))}</button></div>`;
+       <div class="card row between"><div><b>${esc(shopN ? t('shopSummary', { n: plural(shopN) }) : t('shopSummary0'))}</b></div><button class="btn small secondary" data-go="shop">${esc(t('openList'))}</button></div>
+       <div class="card dec"><h2>🎲 ${esc(t('decTitle'))}</h2><div class="muted">${esc(t('decIntro'))}</div>
+         <div class="row" style="margin-top:10px">${KINDS.map(k => `<button type="button" class="btn secondary grow dec-open" data-dec="${k}">${KIND_ICON[k]} ${esc(t('kind_' + k))}${todayPick(k) ? `<small>${esc(t('decToday', { n: todayPick(k).n }))}</small>` : ''}</button>`).join('')}</div></div>`;
   }
-  function bindToday(v) { bindQuestion(v); bindChoreRows(v); v.querySelectorAll('[data-go]').forEach(b => b.onclick = () => go(b.dataset.go)); }
+  function bindToday(v) { bindQuestion(v); bindChoreRows(v); v.querySelectorAll('[data-go]').forEach(b => b.onclick = () => go(b.dataset.go)); v.querySelectorAll('[data-dec]').forEach(b => b.onclick = () => openDecider(b.dataset.dec)); }
+
+  // --- Rozhodovač: oba přidávají nápady, náhoda vybere; co padlo naposledy, se hned nevrátí ---
+  const KINDS = ['dinner', 'movie'], KIND_ICON = { dinner: '🍝', movie: '🎬' };
+  let decKind = 'dinner', decResult = null, decSpinning = false;
+  const ideas = k => S.get('ideas').filter(i => i.k === k).sort((x, y) => x.t - y.t);
+  const recentIds = k => { const r = S.state.picks[k]; return (r && Array.isArray(r.ids)) ? r.ids : []; };
+  function lastPick(k) { const id = recentIds(k)[0]; const i = id && S.state.ideas[id]; return i && !i.del ? i : null; }
+  function todayPick(k) { const r = S.state.picks[k]; return r && r.at && startOfDay(r.at) === today0() ? lastPick(k) : null; }
+  function pickIdea(k) {
+    const all = ideas(k); if (!all.length) return null;
+    const skip = recentIds(k).slice(0, Math.min(2, all.length - 1)); // poslední dva nevracet, pokud je z čeho vybírat
+    const pool = all.filter(i => !skip.includes(i.id));
+    return pool[Math.floor(Math.random() * pool.length)];
+  }
+  function addIdea(k, text) {
+    text.split(',').map(s => s.trim()).filter(Boolean).forEach(nm => { if (!ideas(k).some(i => norm(i.n) === norm(nm))) S.set('ideas', S.uid(), { n: nm, k, by: me() }); });
+  }
+  function deciderHTML() {
+    const k = decKind, all = ideas(k), have = new Set(all.map(i => norm(i.n))), last = lastPick(k);
+    const sugg = (t('decSugg_' + k) || []).filter(s => !have.has(norm(s))).slice(0, 8);
+    const res = decResult && !decResult.del ? decResult : null;
+    return `<div class="row between"><h3 style="margin:0">🎲 ${esc(t('decTitle'))}</h3><button type="button" class="btn ghost small" id="decClose">${esc(t('close'))}</button></div>
+      <div style="margin-top:10px">${segHTML('kind', KINDS.map(x => [x, KIND_ICON[x] + ' ' + t('kind_' + x)]), k)}</div>
+      <div class="wheel ${res ? 'pop' : ''}" id="decResult" aria-live="polite">${res ? `<small>${esc(t('decResult'))}</small>${esc(res.n)}` : (all.length ? '?' : '…')}</div>
+      <div class="muted center" style="min-height:20px">${all.length === 0 ? esc(t('decEmpty')) : all.length === 1 ? esc(t('decOne')) : (last && !res ? esc(t('decLast', { n: last.n })) : esc(t('decNoRepeat')))}</div>
+      <button type="button" class="btn block" id="decSpin" style="margin-top:10px" ${all.length ? '' : 'disabled'}>${esc(res ? t('decAgain') : t('decSpin'))}</button>
+      <label class="field" for="decInput">${esc(t('decIdeas'))} (${all.length})</label>
+      <div class="chips" style="margin:0 0 10px">${all.map(i => `<span class="chip rm ${i.by || ''}">${esc(i.n)}<button type="button" class="x" data-decdel="${i.id}" aria-label="${esc(t('decDelete', { n: i.n }))}">✕</button></span>`).join('')}</div>
+      <div class="row"><input class="input grow" id="decInput" placeholder="${esc(t('decAddPlaceholder'))}" autocomplete="off" enterkeyhint="done" maxlength="40"><button type="button" class="btn" id="decAdd" aria-label="${esc(t('add'))}">+</button></div>
+      ${sugg.length ? `<div class="chips">${sugg.map(s => `<button type="button" class="chip" data-decsugg="${esc(s)}">+ ${esc(s)}</button>`).join('')}</div>` : ''}`;
+  }
+  function bindDecider(p) {
+    p.querySelector('#decClose').onclick = closeSheet;
+    bindSeg(p, 'kind', val => { if (decSpinning) return; decKind = val; decResult = null; refreshDecider(); });
+    const inp = p.querySelector('#decInput'); const add = () => { if (inp.value.trim()) { addIdea(decKind, inp.value); inp.value = ''; inp.focus(); } };
+    p.querySelector('#decAdd').onclick = add; inp.onkeydown = e => { if (e.key === 'Enter') { e.preventDefault(); add(); } };
+    p.querySelectorAll('[data-decsugg]').forEach(b => b.onclick = () => addIdea(decKind, b.dataset.decsugg));
+    p.querySelectorAll('[data-decdel]').forEach(b => b.onclick = () => { if (decResult && decResult.id === b.dataset.decdel) decResult = null; S.del('ideas', b.dataset.decdel); });
+    p.querySelector('#decSpin').onclick = () => spinDecider(p);
+  }
+  function refreshDecider() {
+    if (decSpinning) return; // během točení nepřekreslovat
+    const p = $('#sheet .panel'); if (!p) return;
+    const inp = p.querySelector('#decInput'), keep = inp && document.activeElement === inp ? inp.value : null;
+    p.innerHTML = deciderHTML(); bindDecider(p);
+    if (keep !== null) { const i = p.querySelector('#decInput'); i.value = keep; i.focus(); }
+  }
+  function openDecider(k) { decKind = KINDS.includes(k) ? k : 'dinner'; decResult = null; decSpinning = false; sheet(deciderHTML(), bindDecider, refreshDecider); }
+  function spinDecider(p) {
+    const all = ideas(decKind), final = pickIdea(decKind); if (!final || decSpinning) return;
+    const box = p.querySelector('#decResult'), btn = p.querySelector('#decSpin');
+    const reduced = window.matchMedia && matchMedia('(prefers-reduced-motion: reduce)').matches;
+    const steps = (reduced || all.length < 2) ? 0 : 12; let i = 0, delay = 55;
+    decSpinning = true; decResult = null; box.classList.remove('pop'); box.classList.add('spin'); btn.disabled = true;
+    const tick = () => {
+      if (i >= steps) {
+        decSpinning = false; decResult = final;
+        S.set('picks', decKind, { ids: [final.id].concat(recentIds(decKind).filter(x => x !== final.id)).slice(0, 5), at: Date.now() }); // uloží se, překreslí a ukáže výsledek
+        return;
+      }
+      box.textContent = all[(i + 1 + Math.floor(Math.random() * (all.length - 1))) % all.length].n; i++; delay = Math.round(delay * 1.18); setTimeout(tick, delay);
+    };
+    tick();
+  }
   function bindQuestion(v) {
     const send = v.querySelector('#qSend'); if (send) send.onclick = () => { const txt = v.querySelector('#qText').value.trim(); if (!txt) return; S.set('answers', dateKey(Date.now()), { text: txt }, me()); };
     const ed = v.querySelector('#qEdit'); if (ed) ed.onclick = () => { const cur = (S.state.answers[dateKey(Date.now())] || {})[me()]; const txt = prompt(t('qPlaceholder'), cur ? cur.text : ''); if (txt != null && txt.trim()) S.set('answers', dateKey(Date.now()), { text: txt.trim() }, me()); };
@@ -306,5 +374,5 @@
   render();
   setInterval(() => { if (tab === 'today' || tab === 'chores') render(); }, 60000);
   if ('serviceWorker' in navigator && location.protocol.startsWith('http')) navigator.serviceWorker.register('sw.js').catch(() => { });
-  window.NaseDoma = { t, render, go, guessCat, daysUntil, turn, weekPoints, questionIndex, inviteLink, lang, name, get tab() { return tab; } };
+  window.NaseDoma = { t, render, go, guessCat, daysUntil, turn, weekPoints, questionIndex, inviteLink, lang, name, openDecider, pickIdea, ideas, closeSheet, get tab() { return tab; }, get decResult() { return decResult; }, get decSpinning() { return decSpinning; } };
 })();

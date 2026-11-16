@@ -10,11 +10,13 @@
 //   log:     { id: {chore, name, by, at, pts, t, del} }
 //   answers: { 'YYYY-MM-DD': { a: {text,t}, b: {text,t} } }
 //   fav:     { nazev: {n, count, c, t} }
+//   ideas:   { id: {n, k ('dinner'|'movie'), by, t, del} }   – nápady do rozhodovače
+//   picks:   { k: {ids: [poslední vybrané id…], at, t} }      – co naposledy padlo (ať se hned nevrací)
 (function () {
   const KEY = 'naseDoma.v1';
   const CFG = 'naseDoma.cfg.v1';
   const QUEUE = 'naseDoma.queue.v1';
-  const COLLS = ['people', 'shop', 'chores', 'log', 'answers', 'fav'];
+  const COLLS = ['people', 'shop', 'chores', 'log', 'answers', 'fav', 'ideas', 'picks'];
 
   const now = () => Date.now();
   const uid = () => now().toString(36) + Math.random().toString(36).slice(2, 8);
