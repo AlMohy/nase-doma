@@ -8,7 +8,7 @@ window.PREKLADY = {
     today: 'dnes', tomorrow: 'zítra', inDays: 'za {n} dní', overdue: 'zpožděno o {n} dní', overdue1: 'zpožděno o 1 den',
     // Otázka dne
     qTitle: 'Otázka dne', qHint: 'Odpovězte oba. Odpověď toho druhého uvidíš, až odpovíš i ty.',
-    qPlaceholder: 'Tvoje odpověď…', qSend: 'Odpovědět', qWaiting: '{name} ještě neodpověděl/a. Až odpoví, uvidíš to tady.',
+    qPlaceholder: 'Tvoje odpověď…', qSend: 'Odpovědět', qWaiting: '{name}: zatím bez odpovědi. Až odpoví, uvidíš ji tady.',
     qWaitingYou: 'Partner už odpověděl. Odpověz a uvidíš, co napsal.', qHistory: 'Dřívější otázky',
     qEdit: 'Upravit',
     // Dnes
@@ -51,7 +51,7 @@ window.PREKLADY = {
     joinedToast: 'Připojeno k domácnosti. Vyberte, kdo jste.',
     me: 'já', offline: 'offline – změny se pošlou, až bude signál',
     weekdays: ['neděle', 'pondělí', 'úterý', 'středa', 'čtvrtek', 'pátek', 'sobota'],
-    justNow: 'právě teď', addedBy: 'Přidal(a) {name}', minAgo: 'před {n} min', hoursAgo: 'před {n} h', daysAgo: 'před {n} dny', yesterday: 'včera',
+    justNow: 'právě teď', addedBy: 'Přidáno – {name}', minAgo: 'před {n} min', hoursAgo: 'před {n} h', daysAgo: 'před {n} dny', yesterday: 'včera',
     welcomeTitle: 'Vítejte doma', welcomeText: 'Nákupní lístek, domácí úkoly s férovým skóre, otázka dne a rozhodovač pro vás dva. Nejdřív řekněte, kdo jste.', welcomeGo: 'Jdeme na to',
     // Rozhodovač
     decTitle: 'Rozhodovač', decIntro: 'Nevíte se rozhodnout? Nechte to na náhodě.', kind_dinner: 'Co k večeři', kind_movie: 'Jaký film',
@@ -66,7 +66,7 @@ window.PREKLADY = {
     hello: 'Привет, {name}', helloNoName: 'Привет',
     today: 'сегодня', tomorrow: 'завтра', inDays: 'через {n} дн.', overdue: 'просрочено на {n} дн.', overdue1: 'просрочено на 1 день',
     qTitle: 'Вопрос дня', qHint: 'Ответьте оба. Ответ партнёра откроется, когда ответишь и ты.',
-    qPlaceholder: 'Твой ответ…', qSend: 'Ответить', qWaiting: '{name} ещё не ответил(а). Когда ответит, увидишь здесь.',
+    qPlaceholder: 'Твой ответ…', qSend: 'Ответить', qWaiting: '{name}: ответа пока нет. Когда ответит, увидишь его здесь.',
     qWaitingYou: 'Партнёр уже ответил. Ответь и увидишь, что он написал.', qHistory: 'Прошлые вопросы',
     qEdit: 'Изменить',
     todayChores: 'Что сегодня на очереди', todayNoChores: 'Сегодня ничего не горит. Отдыхайте.', doneBtn: 'Готово',
@@ -105,7 +105,7 @@ window.PREKLADY = {
     joinedToast: 'Подключено к дому. Выберите, кто вы.',
     me: 'я', offline: 'офлайн — изменения отправятся, когда появится сеть',
     weekdays: ['воскресенье', 'понедельник', 'вторник', 'среда', 'четверг', 'пятница', 'суббота'],
-    justNow: 'только что', addedBy: 'Добавил(а) {name}', minAgo: '{n} мин назад', hoursAgo: '{n} ч назад', daysAgo: '{n} дн. назад', yesterday: 'вчера',
+    justNow: 'только что', addedBy: 'Добавлено – {name}', minAgo: '{n} мин назад', hoursAgo: '{n} ч назад', daysAgo: '{n} дн. назад', yesterday: 'вчера',
     welcomeTitle: 'Добро пожаловать домой', welcomeText: 'Список покупок, домашние дела с честным счётом, вопрос дня и решалка для вас двоих. Сначала скажите, кто вы.', welcomeGo: 'Начать',
     decTitle: 'Решалка', decIntro: 'Не можете решить? Доверьтесь случаю.', kind_dinner: 'Что на ужин', kind_movie: 'Какой фильм',
     decSpin: 'Крутить', decAgain: 'Ещё раз', decEmpty: 'Сначала добавьте пару идей.', decOne: 'Добавьте хотя бы две идеи, чтобы было из чего выбирать.', decIdeas: 'Идеи', decAddPlaceholder: 'Добавить идею…',
