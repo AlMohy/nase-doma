@@ -1,0 +1,39 @@
+<!DOCTYPE html>
+<html lang="cs">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="color-scheme" content="light dark">
+<meta name="theme-color" content="#f6f1ea" media="(prefers-color-scheme: light)">
+<meta name="theme-color" content="#1c1a1f" media="(prefers-color-scheme: dark)">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="default">
+<meta name="apple-mobile-web-app-title" content="Naše doma">
+<title>Naše doma</title>
+<link rel="manifest" href="manifest.webmanifest">
+<link rel="icon" href="ikony/ikona.svg" type="image/svg+xml">
+<link rel="apple-touch-icon" href="ikony/ikona-180.png">
+<link rel="stylesheet" href="app.css">
+</head>
+<body>
+<div id="app" class="app">
+  <header class="top">
+    <div class="top-title" id="topTitle">Naše doma</div>
+    <div class="top-right" id="topRight"></div>
+  </header>
+  <main id="view" class="view"></main>
+  <nav class="tabs" id="tabs">
+    <button class="tab" data-tab="today"><span class="ico">☀️</span><span data-t="tabToday"></span></button>
+    <button class="tab" data-tab="shop"><span class="ico">🛒</span><span data-t="tabShop"></span><span class="badge" id="shopBadge"></span></button>
+    <button class="tab" data-tab="chores"><span class="ico">🧹</span><span data-t="tabChores"></span><span class="badge" id="choreBadge"></span></button>
+    <button class="tab" data-tab="more"><span class="ico">⚙️</span><span data-t="tabMore"></span></button>
+  </nav>
+  <div id="toast" class="toast" hidden></div>
+  <div id="sheet" class="sheet" hidden></div>
+</div>
+<script src="preklady.js"></script>
+<script src="otazky.js"></script>
+<script src="sync.js"></script>
+<script src="app.js"></script>
+</body>
+</html>
