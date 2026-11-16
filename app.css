@@ -52,6 +52,7 @@ button { cursor: pointer; -webkit-tap-highlight-color: transparent; }
 .btn.block { width: 100%; }
 .btn:disabled { opacity: .5; }
 .input, textarea.input { width: 100%; border: 1px solid var(--line); background: var(--card2); border-radius: 14px; padding: 12px 14px; outline: none; }
+#shopAdd, #decAdd { font-size: 24px; line-height: 1; min-width: 52px; }
 .input:focus { border-color: var(--accent); }
 textarea.input { resize: vertical; min-height: 72px; }
 select.input { appearance: none; -webkit-appearance: none; }

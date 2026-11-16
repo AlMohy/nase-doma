@@ -52,7 +52,7 @@ window.PREKLADY = {
     me: 'já', offline: 'offline – změny se pošlou, až bude signál',
     weekdays: ['neděle', 'pondělí', 'úterý', 'středa', 'čtvrtek', 'pátek', 'sobota'],
     justNow: 'právě teď', addedBy: 'Přidal(a) {name}', minAgo: 'před {n} min', hoursAgo: 'před {n} h', daysAgo: 'před {n} dny', yesterday: 'včera',
-    welcomeTitle: 'Vítejte doma', welcomeText: 'Nákupní lístek, domácí úkoly s férovým skóre a otázka dne pro vás dva. Nejdřív řekněte, kdo jste.', welcomeGo: 'Jdeme na to',
+    welcomeTitle: 'Vítejte doma', welcomeText: 'Nákupní lístek, domácí úkoly s férovým skóre, otázka dne a rozhodovač pro vás dva. Nejdřív řekněte, kdo jste.', welcomeGo: 'Jdeme na to',
     // Rozhodovač
     decTitle: 'Rozhodovač', decIntro: 'Nevíte se rozhodnout? Nechte to na náhodě.', kind_dinner: 'Co k večeři', kind_movie: 'Jaký film',
     decSpin: 'Zatočit', decAgain: 'Ještě jednou', decEmpty: 'Nejdřív přidejte pár nápadů.', decOne: 'Přidejte aspoň dva nápady, ať je z čeho vybírat.', decIdeas: 'Nápady', decAddPlaceholder: 'Přidat nápad…',
@@ -106,7 +106,7 @@ window.PREKLADY = {
     me: 'я', offline: 'офлайн — изменения отправятся, когда появится сеть',
     weekdays: ['воскресенье', 'понедельник', 'вторник', 'среда', 'четверг', 'пятница', 'суббота'],
     justNow: 'только что', addedBy: 'Добавил(а) {name}', minAgo: '{n} мин назад', hoursAgo: '{n} ч назад', daysAgo: '{n} дн. назад', yesterday: 'вчера',
-    welcomeTitle: 'Добро пожаловать домой', welcomeText: 'Список покупок, домашние дела с честным счётом и вопрос дня для вас двоих. Сначала скажите, кто вы.', welcomeGo: 'Начать',
+    welcomeTitle: 'Добро пожаловать домой', welcomeText: 'Список покупок, домашние дела с честным счётом, вопрос дня и решалка для вас двоих. Сначала скажите, кто вы.', welcomeGo: 'Начать',
     decTitle: 'Решалка', decIntro: 'Не можете решить? Доверьтесь случаю.', kind_dinner: 'Что на ужин', kind_movie: 'Какой фильм',
     decSpin: 'Крутить', decAgain: 'Ещё раз', decEmpty: 'Сначала добавьте пару идей.', decOne: 'Добавьте хотя бы две идеи, чтобы было из чего выбирать.', decIdeas: 'Идеи', decAddPlaceholder: 'Добавить идею…',
     decLast: 'В прошлый раз выпало: {n}', decToday: 'Сегодня выпало: {n}', decNoRepeat: 'То, что выпало недавно, пока не вернётся.', decDelete: 'Удалить {n}', decResult: 'Выпало:', close: 'Закрыть',
